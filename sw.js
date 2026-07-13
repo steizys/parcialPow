@@ -11,7 +11,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Cacheando archivos estáticos de SkyDash...');
+            console.log('Cacheando archivos de SkyDash');
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
@@ -24,7 +24,7 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cache) => {
                     if (cache !== CACHE_NAME) {
-                        console.log('Borrando caché antigua:', cache);
+                        console.log('caché antigua:', cache);
                         return caches.delete(cache);
                     }
                 })

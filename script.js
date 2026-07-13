@@ -17,7 +17,7 @@ loginForm.addEventListener('submit', function(e) {
     e.preventDefault();
     document.getElementById('btn-login-text').classList.add('hidden');
     document.getElementById('login-spinner').classList.remove('hidden');
-
+    //spiner
     setTimeout(() => {
         localStorage.setItem('skyDash_token', 'mock-jwt-token-12345');
         document.getElementById('login-spinner').classList.add('hidden');
@@ -54,23 +54,20 @@ function initApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
     
-    if (!map) {
+    if (!map) { //si el mapa existe
         map = L.map('map').setView([10.4806, -66.9036], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         map.on('click', function(e) {
-            handleLocationSelection(e.latlng.lat, e.latlng.lng);
+            localizacion(e.latlng.lat, e.latlng.lng);
         });
     }
-    renderFavorites();
-    
+    cargarFavoritos();
     if(!navigator.onLine) {
-        alert("Modo offline activado. Los datos mostrados provienen de consultas previas guardadas.");
+        alert("Modo offline, los datos mostrados provienen de consultas anteriores guardadas.");
     }
 }
 
-function getWeatherEmoji(code) {
+function getClimaEmojis(code) {
     const emojis = {
         0: '☀️',
         1: '⛅', 2: '⛅', 3: '⛅',
@@ -84,15 +81,19 @@ function getWeatherEmoji(code) {
 }
 
 
-async function handleLocationSelection(lat, lng, customName = null) {
+async function localizacion(lat, lng, customName = null) {
     currentSelectedCoords = { lat, lng };
     document.getElementById('weather-box').classList.remove('hidden');
     document.getElementById('weather-loading').classList.remove('hidden');
     document.getElementById('weather-info').classList.add('hidden');
 
 
-    if (mainMarker) map.removeLayer(mainMarker);
-    mainMarker = L.marker([lat, lng]).addTo(map);
+    // el pin
+    if (mainMarker) {
+        mainMarker.setLatLng([lat, lng]);
+    } else {
+        mainMarker = L.marker([lat, lng]).addTo(map);
+    }
     map.panTo([lat, lng]);
 
    
@@ -131,16 +132,16 @@ async function handleLocationSelection(lat, lng, customName = null) {
     }
 
     if (weatherData) {
-        displayWeather(weatherData);
+        displayClima(weatherData);
     }
 }
 
-function displayWeather(data) {
+function displayClima(data) {
     document.getElementById('weather-loading').classList.add('hidden');
     document.getElementById('weather-info').classList.remove('hidden');
 
     const current = data.current_weather;
-    const emoji = getWeatherEmoji(current.weathercode);
+    const emoji = getClimaEmojis(current.weathercode);
 
     if (mainMarker) map.removeLayer(mainMarker);
     
@@ -168,7 +169,7 @@ function displayWeather(data) {
         
         dayEl.innerHTML = `
             <div><strong>${dayName}</strong></div>
-            <div style="font-size:1.2rem; margin:3px 0;">${getWeatherEmoji(data.daily.weathercode[i])}</div>
+            <div style="font-size:1.2rem; margin:3px 0;">${getClimaEmojis(data.daily.weathercode[i])}</div>
             <div style="font-size:0.75rem;">${Math.round(data.daily.temperature_2m_max[i])}° / ${Math.round(data.daily.temperature_2m_min[i])}°</div>
         `;
         forecastContainer.appendChild(dayEl);
@@ -188,7 +189,7 @@ async function triggerSearch() {
         if (data && data.length > 0) {
             const lat = parseFloat(data[0].lat);
             const lng = parseFloat(data[0].lon);
-            handleLocationSelection(lat, lng, data[0].display_name.split(',')[0]);
+            localizacion(lat, lng, data[0].display_name.split(',')[0]);
         } else {
             alert("Ubicación no encontrada.");
         }
@@ -211,10 +212,10 @@ document.getElementById('fav-btn').addEventListener('click', () => {
     });
 
     localStorage.setItem('skyDash_favs', JSON.stringify(favorites));
-    renderFavorites();
+    cargarFavoritos();
 });
 
-function renderFavorites() {
+function cargarFavoritos() {
     const list = document.getElementById('favorites-list');
     list.innerHTML = '';
     
@@ -227,14 +228,14 @@ function renderFavorites() {
         `;
         
         li.querySelector('.fav-link').addEventListener('click', () => {
-            handleLocationSelection(fav.lat, fav.lng, fav.name);
+            localizacion(fav.lat, fav.lng, fav.name);
         });
 
         li.querySelector('.btn-delete').addEventListener('click', (e) => {
             e.stopPropagation();
             favorites.splice(index, 1);
             localStorage.setItem('skyDash_favs', JSON.stringify(favorites));
-            renderFavorites();
+            cargarFavoritos();
         });
 
         list.appendChild(li);
