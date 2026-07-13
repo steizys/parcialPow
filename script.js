@@ -234,21 +234,22 @@ document.getElementById('search-btn').addEventListener('click', triggerSearch);
 document.getElementById('search-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerSearch(); });
 
 async function triggerSearch() {
+    //obtener y validar búsqueda
     const query = document.getElementById('search-input').value.trim();
     if (!query) return;
-
     try {
         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
         const data = await res.json();
+        // procesar resultado
         if (data && data.length > 0) {
             const lat = parseFloat(data[0].lat);
             const lng = parseFloat(data[0].lon);
-            localizacion(lat, lng, data[0].display_name.split(',')[0]);
+            localizacion(lat, lng, data[0].display_name.split(',')[0]); //localiza
         } else {
-            alert("Ubicación no encontrada.");
+            alert("ubicación no encontrada.");
         }
     } catch (err) {
-        alert("Error de red al buscar ubicación.");
+        alert("error de red al buscar ubicación.");
     }
 }
 
