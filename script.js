@@ -1,3 +1,10 @@
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+            .catch(err => console.error('Error al registrar el Service Worker:', err));
+    });
+}
 let map;
 let mainMarker;
 let favorites = JSON.parse(localStorage.getItem('skyDash_favs')) || [];
@@ -11,7 +18,6 @@ loginForm.addEventListener('submit', function(e) {
     document.getElementById('btn-login-text').classList.add('hidden');
     document.getElementById('login-spinner').classList.remove('hidden');
 
-    //spinner de carga
     setTimeout(() => {
         localStorage.setItem('skyDash_token', 'mock-jwt-token-12345');
         document.getElementById('login-spinner').classList.add('hidden');
@@ -22,7 +28,7 @@ loginForm.addEventListener('submit', function(e) {
 
 document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('skyDash_token');
-    location.reload(); // Limpia estado de memoria y fuerza el render de login seguro
+    location.reload(); 
 });
 
 // --- CAMBIO DE TEMA (MODO OSCURO / CLARO) ---
@@ -123,7 +129,7 @@ async function handleLocationSelection(lat, lng, customName = null) {
         try {
             const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`);
             weatherData = await weatherRes.json();
-            localStorage.setItem(cacheKey, JSON.stringify(weatherData)); // Almacenamiento local para offline
+            localStorage.setItem(cacheKey, JSON.stringify(weatherData)); 
         } catch (error) {
             console.error("Error trayendo clima", error);
         }
