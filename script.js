@@ -80,7 +80,61 @@ function getClimaEmojis(code) {
     return emojis[code] || '☁️';
 }
 
+async function localizacion(lat, lng, customName = null) {
+    currentSelectedCoords = { lat, lng };
+    document.getElementById('weather-box').classList.remove('hidden');
+    document.getElementById('weather-loading').classList.remove('hidden');
+    document.getElementById('weather-info').classList.add('hidden');
 
+    //actualizar mapa
+    if (mainMarker) {
+        mainMarker.setLatLng([lat, lng]);
+    } else {
+        mainMarker = L.marker([lat, lng]).addTo(map);
+    }
+    map.panTo([lat, lng]);
+
+    //obtener nombre de lugar
+    if (!customName) {
+        try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const geoData = await geoRes.json();
+            currentSelectedName = geoData.display_name.split(',')[0] || `coord: ${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+        } catch (err) {
+            currentSelectedName = `ubicación (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
+        }
+    } else {
+        currentSelectedName = customName;
+    }
+    document.getElementById('location-name').innerText = currentSelectedName;
+
+    // gestionar clima y cache
+    const cacheKey = `weather_${lat}_${lng}`;
+    let weatherData = null;
+
+    if (!navigator.onLine) {
+        // modo offline
+        weatherData = JSON.parse(localStorage.getItem(cacheKey));
+        if (!weatherData) {
+            alert("sin conexión y sin datos guardados.");
+            document.getElementById('weather-loading').classList.add('hidden');
+            return;
+        }
+    } else {
+        // modo online
+        try {
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`);
+            weatherData = await weatherRes.json();
+            localStorage.setItem(cacheKey, JSON.stringify(weatherData)); 
+        } catch (error) {
+            console.error("error al cargar clima:", error);
+        }
+    }
+
+    if (weatherData) {
+        displayClima(weatherData);
+    }
+}
 async function localizacion(lat, lng, customName = null) {
     currentSelectedCoords = { lat, lng };
     document.getElementById('weather-box').classList.remove('hidden');
