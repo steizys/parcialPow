@@ -234,7 +234,7 @@ document.getElementById('search-btn').addEventListener('click', triggerSearch);
 document.getElementById('search-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerSearch(); });
 
 async function triggerSearch() {
-    //obtener y validar búsqueda
+    //obtiene y valida
     const query = document.getElementById('search-input').value.trim();
     if (!query) return;
     try {
