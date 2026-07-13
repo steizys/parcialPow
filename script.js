@@ -31,7 +31,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     location.reload(); 
 });
 
-// --- CAMBIO DE TEMA (MODO OSCURO / CLARO) ---
+//cambio temas
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle.addEventListener('click', () => {
     const currentTheme = document.body.getAttribute('data-theme');
@@ -40,9 +40,8 @@ themeToggle.addEventListener('click', () => {
     localStorage.setItem('skyDash_theme', newTheme);
 });
 
-// --- INICIALIZACIÓN ---
+
 window.addEventListener('DOMContentLoaded', () => {
-    // Cargar tema previo
     const savedTheme = localStorage.getItem('skyDash_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
@@ -55,21 +54,17 @@ function initApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
     
-    // Inicializar Mapa (Por defecto en Caracas)
     if (!map) {
         map = L.map('map').setView([10.4806, -66.9036], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
-
-        // Evento de clic en el mapa (Georreferenciación directa)
         map.on('click', function(e) {
             handleLocationSelection(e.latlng.lat, e.latlng.lng);
         });
     }
     renderFavorites();
     
-    // Resiliencia/Offline
     if(!navigator.onLine) {
         alert("Modo offline activado. Los datos mostrados provienen de consultas previas guardadas.");
     }
@@ -87,19 +82,19 @@ function getWeatherEmoji(code) {
     return '☁️';
 }
 
-// --- LÓGICA DE GEORREFERENCIACIÓN Y CONSULTA ---
+
 async function handleLocationSelection(lat, lng, customName = null) {
     currentSelectedCoords = { lat, lng };
     document.getElementById('weather-box').classList.remove('hidden');
     document.getElementById('weather-loading').classList.remove('hidden');
     document.getElementById('weather-info').classList.add('hidden');
 
-    // Inyectar marcador dinámico temporalmente
+
     if (mainMarker) map.removeLayer(mainMarker);
     mainMarker = L.marker([lat, lng]).addTo(map);
     map.panTo([lat, lng]);
 
-    // Geocodificación Inversa
+   
     if (!customName) {
         try {
             const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
@@ -114,7 +109,6 @@ async function handleLocationSelection(lat, lng, customName = null) {
 
     document.getElementById('location-name').innerText = currentSelectedName;
 
-    // Petición Meteorológica a Open-Meteo
     const cacheKey = `weather_${lat}_${lng}`;
     let weatherData = null;
 
@@ -147,7 +141,6 @@ function displayWeather(data) {
     const current = data.current_weather;
     const emoji = getWeatherEmoji(current.weathercode);
 
-    // Manipulación avanzada de marcador (Divicon programático)
     if (mainMarker) map.removeLayer(mainMarker);
     
     const customIcon = L.divIcon({
@@ -159,11 +152,9 @@ function displayWeather(data) {
 
     mainMarker = L.marker([currentSelectedCoords.lat, currentSelectedCoords.lng], { icon: customIcon }).addTo(map);
 
-    // Llenar datos actuales
     document.getElementById('current-temp').innerText = `${current.temperature}°C ${emoji}`;
     document.getElementById('current-extra').innerText = `Viento: ${current.windspeed} km/h`;
 
-    // Pronóstico 7 Días
     const forecastContainer = document.getElementById('forecast-container');
     forecastContainer.innerHTML = '';
     
