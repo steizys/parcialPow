@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyDash-Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <h2>SkyDash-Manager</h2>
+            <p style="margin-bottom:15px; color:#666;">Inicie sesión para continuar</p>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Usuario (Simulado)" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit" class="btn" id="btn-login-text">Ingresar</button>
+                <div id="login-spinner" class="spinner hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="hidden" style="height: 100vh; display: flex; flex-direction: column;">
+        <header>
+            <h1>SkyDash 🌦️</h1>
+            <div class="controls-top">
+                <button id="theme-toggle" class="btn" style="width:auto; padding:5px 10px;">🌓 Modo</button>
+                <button id="logout-btn" class="btn btn-sm" style="background:#6c757d;">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <div id="map"></div>
+
+            <div class="sidebar">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Buscar ciudad (ej. Caracas)...">
+                    <button id="search-btn" class="btn" style="width:auto;">Buscar</button>
+                </div>
+
+                <div id="weather-box" class="weather-detail hidden">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 id="location-name">Ubicación</h3>
+                        <button id="fav-btn" class="btn" style="width:auto; padding:3px 8px; background:#ffc107; color:#333;">Guardar</button>
+                    </div>
+                    <div id="weather-loading" class="spinner hidden"></div>
+                    <div id="weather-info">
+                        <p id="current-temp" style="font-size:1.5rem; font-weight:bold; margin:10px 0;"></p>
+                        <p id="current-extra"></p>
+                        <hr style="margin:10px 0; border:0; border-top:1px solid var(--border-color);">
+                        <h4>Pronosstico</h4>
+                        <div class="forecast-grid" id="forecast-container"></div>
+                    </div>
+                </div>
+
+                <div class="favorites-section">
+                    <h3>Mis Ubicaciones Favoritas</h3>
+                    <ul id="favorites-list" class="fav-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
