@@ -70,16 +70,17 @@ function initApp() {
     }
 }
 
-// --- TRADUCCIÓN DE CLIMA A EMOJIS (Divicon funcional) ---
 function getWeatherEmoji(code) {
-    if (code === 0) return '☀️';
-    if (code >= 1 && code <= 3) return '⛅';
-    if (code >= 45 && code <= 48) return '🌫️';
-    if (code >= 51 && code <= 67) return '🌧️';
-    if (code >= 71 && code <= 77) return '❄️';
-    if (code >= 80 && code <= 82) return '🌦️';
-    if (code >= 95 && code <= 99) return '⛈️';
-    return '☁️';
+    const emojis = {
+        0: '☀️',
+        1: '⛅', 2: '⛅', 3: '⛅',
+        45: '🌫️', 48: '🌫️',
+        51: '🌧️', 53: '🌧️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️',
+        71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
+        80: '🌦️', 81: '🌦️', 82: '🌦️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️'
+    };
+    return emojis[code] || '☁️';
 }
 
 
@@ -174,7 +175,6 @@ function displayWeather(data) {
     }
 }
 
-// --- BUSCADOR MANUAL POR TEXTO ---
 document.getElementById('search-btn').addEventListener('click', triggerSearch);
 document.getElementById('search-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerSearch(); });
 
@@ -197,7 +197,6 @@ async function triggerSearch() {
     }
 }
 
-// --- GESTIÓN DE FAVORITOS (PERSISTENCIA) ---
 document.getElementById('fav-btn').addEventListener('click', () => {
     if (!currentSelectedCoords) return;
     
